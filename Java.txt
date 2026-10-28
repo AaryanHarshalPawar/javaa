@@ -1,0 +1,990 @@
+# Java Programs — Units 1 to 3 (Assignments 1–18)
+
+Every program is a single `Main.java` — paste it straight into onlinegdb (language: Java).
+Helper classes have no `public` so they can sit in the same file.
+Exception: Assignment 12 (packages) needs two files.
+
+---
+
+## UNIT 1
+
+### Assignment 1 — Variables, methods, constructors (JDK/JRE/JVM basics)
+```java
+import java.util.Scanner;
+
+class Employee {
+    String name;
+    double salary;
+
+    Employee(String name, double salary) {      // constructor
+        this.name = name;
+        this.salary = salary;
+    }
+
+    double annualSalary() { return salary * 12; }
+
+    void display() {
+        System.out.println("Name: " + name + ", Monthly: " + salary + ", Annual: " + annualSalary());
+    }
+}
+
+public class Main {
+    static int square(int n) { return n * n; }  // static method
+
+    public static void main(String[] args) {
+        // primitive variables
+        int a = 10;
+        double d = 5.5;
+        char c = 'J';
+        boolean flag = true;
+        String s = "Java";
+        System.out.println("int=" + a + " double=" + d + " char=" + c + " boolean=" + flag + " String=" + s);
+
+        System.out.println("Square of 7 = " + square(7));
+
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter employee name and monthly salary: ");
+        String name = sc.next();
+        double sal = sc.nextDouble();
+
+        Employee e = new Employee(name, sal);
+        e.display();
+        sc.close();
+    }
+}
+```
+Theory line for viva: `javac Main.java` → bytecode `Main.class`; `java Main` → JVM (inside JRE) runs it. JDK = JRE + compiler/tools.
+
+---
+
+### Assignment 2 — Default, parameterized, copy constructors
+```java
+class Student {
+    String name;
+    int roll;
+    double marks;
+
+    Student() {                                   // default
+        name = "Unknown"; roll = 0; marks = 0;
+        System.out.println("Default constructor called");
+    }
+
+    Student(String name, int roll, double marks) { // parameterized
+        this.name = name;
+        this.roll = roll;
+        this.marks = marks;
+        System.out.println("Parameterized constructor called");
+    }
+
+    Student(Student s) {                           // copy
+        this.name = s.name;
+        this.roll = s.roll;
+        this.marks = s.marks;
+        System.out.println("Copy constructor called");
+    }
+
+    void display() {
+        System.out.println("Roll: " + roll + ", Name: " + name + ", Marks: " + marks);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Student s1 = new Student();
+        Student s2 = new Student("Aaryan", 519, 88.5);
+        Student s3 = new Student(s2);
+
+        s1.display();
+        s2.display();
+        s3.display();
+
+        s3.marks = 95;                 // changing the copy does not affect the original
+        System.out.println("After modifying copy:");
+        s2.display();
+        s3.display();
+    }
+}
+```
+
+---
+
+### Assignment 3 — Method overloading and static
+```java
+class Calculator {
+    static int objectCount = 0;          // shared by all objects
+    static final String BRAND = "JavaCalc";
+
+    Calculator() { objectCount++; }
+
+    int add(int a, int b)          { return a + b; }
+    int add(int a, int b, int c)   { return a + b + c; }
+    double add(double a, double b) { return a + b; }
+    String add(String a, String b) { return a + b; }
+
+    static int multiply(int a, int b) { return a * b; }   // static method
+
+    static void showCount() {
+        System.out.println(BRAND + " objects created: " + objectCount);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Calculator c1 = new Calculator();
+        Calculator c2 = new Calculator();
+        Calculator c3 = new Calculator();
+
+        System.out.println("add(int,int)       = " + c1.add(5, 10));
+        System.out.println("add(int,int,int)   = " + c2.add(1, 2, 3));
+        System.out.println("add(double,double) = " + c3.add(2.5, 3.7));
+        System.out.println("add(String,String) = " + c1.add("Hello ", "Java"));
+
+        System.out.println("Static multiply    = " + Calculator.multiply(4, 6));
+        Calculator.showCount();
+    }
+}
+```
+
+---
+
+### Assignment 4 — Wrapper classes
+```java
+public class Main {
+    public static void main(String[] args) {
+        // Boxing: primitive -> object
+        int i = 25;
+        Integer iObj = Integer.valueOf(i);
+        Double dObj = Double.valueOf(12.5);
+        Character cObj = Character.valueOf('A');
+        Boolean bObj = Boolean.valueOf(true);
+        System.out.println("Boxed: " + iObj + " " + dObj + " " + cObj + " " + bObj);
+
+        // Unboxing: object -> primitive
+        int i2 = iObj.intValue();
+        double d2 = dObj.doubleValue();
+        System.out.println("Unboxed: " + i2 + " " + d2);
+
+        // Autoboxing / auto-unboxing
+        Integer auto = 100;
+        int sum = auto + 50;
+        System.out.println("Autoboxing sum: " + sum);
+
+        // String <-> primitive
+        int p = Integer.parseInt("345");
+        double q = Double.parseDouble("3.14");
+        String str = Integer.toString(789);
+        System.out.println("Parsed: " + (p + 5) + " " + (q * 2) + " toString: " + str + "1");
+
+        // Useful wrapper methods
+        System.out.println("Integer max: " + Integer.MAX_VALUE + ", min: " + Integer.MIN_VALUE);
+        System.out.println("Binary of 10: " + Integer.toBinaryString(10));
+        System.out.println("compare(5,9): " + Integer.compare(5, 9));
+        System.out.println("isDigit('7'): " + Character.isDigit('7'));
+        System.out.println("isLetter('x'): " + Character.isLetter('x'));
+        System.out.println("toUpperCase('b'): " + Character.toUpperCase('b'));
+        System.out.println("equals: " + iObj.equals(25));
+    }
+}
+```
+
+---
+
+### Assignment 5 — ArrayList, Vector, StringBuffer
+```java
+import java.util.ArrayList;
+import java.util.Vector;
+
+public class Main {
+    public static void main(String[] args) {
+        // ArrayList
+        ArrayList<String> fruits = new ArrayList<>();
+        fruits.add("Apple");
+        fruits.add("Banana");
+        fruits.add("Mango");
+        fruits.add(1, "Orange");                 // insert at index 1
+        System.out.println("ArrayList: " + fruits);
+        System.out.println("Element at 2: " + fruits.get(2));
+        fruits.set(0, "Grapes");                 // replace
+        fruits.remove("Banana");
+        System.out.println("After set/remove: " + fruits + ", size = " + fruits.size());
+        System.out.println("Contains Mango? " + fruits.contains("Mango"));
+        for (String f : fruits) System.out.print(f + " ");
+        System.out.println();
+
+        // Vector (synchronized)
+        Vector<Integer> v = new Vector<>();
+        v.add(10);
+        v.addElement(20);
+        v.add(30);
+        System.out.println("Vector: " + v);
+        System.out.println("First: " + v.firstElement() + ", Last: " + v.lastElement());
+        v.removeElement(20);
+        System.out.println("After remove: " + v + ", capacity = " + v.capacity());
+
+        // StringBuffer (mutable)
+        StringBuffer sb = new StringBuffer("Hello");
+        sb.append(" World");
+        System.out.println("append:  " + sb);
+        sb.insert(5, ",");
+        System.out.println("insert:  " + sb);
+        sb.replace(0, 5, "Hi");
+        System.out.println("replace: " + sb);
+        sb.delete(0, 3);
+        System.out.println("delete:  " + sb);
+        sb.reverse();
+        System.out.println("reverse: " + sb + ", length = " + sb.length());
+    }
+}
+```
+
+---
+
+### Assignment 6 — Inner class and anonymous class
+```java
+interface Greeting {
+    void greet(String name);
+}
+
+abstract class Animal {
+    abstract void sound();
+}
+
+class Outer {
+    private int data = 50;
+
+    class Inner {                                 // member inner class
+        void show() {
+            System.out.println("Inner class accessing outer private data: " + data);
+        }
+    }
+
+    static class StaticNested {                   // static nested class
+        void show() { System.out.println("Static nested class"); }
+    }
+
+    void localInnerDemo() {
+        class Local {                             // local inner class
+            void show() { System.out.println("Local inner class inside method"); }
+        }
+        new Local().show();
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Outer outer = new Outer();
+        Outer.Inner inner = outer.new Inner();    // needs an outer object
+        inner.show();
+
+        Outer.StaticNested sn = new Outer.StaticNested();
+        sn.show();
+
+        outer.localInnerDemo();
+
+        // Anonymous class implementing an interface
+        Greeting g = new Greeting() {
+            public void greet(String name) {
+                System.out.println("Hello " + name + " from anonymous class (interface)");
+            }
+        };
+        g.greet("Aaryan");
+
+        // Anonymous class extending an abstract class
+        Animal cat = new Animal() {
+            void sound() { System.out.println("Meow from anonymous class (abstract class)"); }
+        };
+        cat.sound();
+    }
+}
+```
+
+---
+
+## UNIT 2
+
+### Assignment 7 — Inheritance and interfaces (real-world)
+```java
+interface Insurable {
+    void getInsurance();
+}
+
+interface Electric {
+    int BATTERY_KWH = 60;                 // interface constants are public static final
+    void charge();
+}
+
+class Vehicle {                           // base class
+    String brand;
+    int speed;
+
+    Vehicle(String brand, int speed) {
+        this.brand = brand;
+        this.speed = speed;
+    }
+
+    void showInfo() { System.out.println("Brand: " + brand + ", Speed: " + speed + " km/h"); }
+}
+
+class Car extends Vehicle implements Insurable {        // single inheritance + interface
+    int doors;
+
+    Car(String brand, int speed, int doors) {
+        super(brand, speed);
+        this.doors = doors;
+    }
+
+    void showInfo() {
+        super.showInfo();
+        System.out.println("Doors: " + doors);
+    }
+
+    public void getInsurance() { System.out.println(brand + " car insured"); }
+}
+
+class ElectricCar extends Car implements Electric {     // multilevel + multiple interfaces
+    ElectricCar(String brand, int speed, int doors) {
+        super(brand, speed, doors);
+    }
+
+    public void charge() { System.out.println(brand + " charging " + BATTERY_KWH + " kWh battery"); }
+}
+
+class Bike extends Vehicle {                            // hierarchical (another child of Vehicle)
+    Bike(String brand, int speed) { super(brand, speed); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("--- Car ---");
+        Car c = new Car("Honda", 180, 4);
+        c.showInfo();
+        c.getInsurance();
+
+        System.out.println("--- Electric Car ---");
+        ElectricCar e = new ElectricCar("Tesla", 250, 4);
+        e.showInfo();
+        e.getInsurance();
+        e.charge();
+
+        System.out.println("--- Bike ---");
+        Bike b = new Bike("Yamaha", 150);
+        b.showInfo();
+
+        System.out.println("--- Polymorphism ---");
+        Vehicle v = new ElectricCar("Tata", 160, 4);   // parent reference, child object
+        v.showInfo();                                    // child's version runs
+    }
+}
+```
+
+---
+
+### Assignment 8 — super keyword
+```java
+class Person {
+    String name = "Person-name";
+
+    Person() { System.out.println("Person default constructor"); }
+
+    Person(String n) {
+        System.out.println("Person parameterized constructor: " + n);
+    }
+
+    void display() { System.out.println("Display from Person"); }
+}
+
+class Teacher extends Person {
+    String name = "Teacher-name";          // hides parent's field
+
+    Teacher() {
+        super("Mr. Sharma");               // 1. super() calls parent constructor (must be first line)
+        System.out.println("Teacher constructor");
+    }
+
+    void display() {
+        super.display();                   // 2. super.method() calls parent method
+        System.out.println("Display from Teacher");
+    }
+
+    void showNames() {
+        System.out.println("this.name  = " + this.name);
+        System.out.println("super.name = " + super.name);   // 3. super.field accesses parent field
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Teacher t = new Teacher();
+        t.display();
+        t.showNames();
+    }
+}
+```
+
+---
+
+### Assignment 9 — final keyword
+```java
+class Bank {
+    final double MIN_BALANCE = 1000;          // final variable: value can't change
+    static final String BANK_NAME = "SBI";    // constant
+
+    final void showRules() {                  // final method: can't be overridden
+        System.out.println(BANK_NAME + " minimum balance: " + MIN_BALANCE);
+    }
+}
+
+class SavingsAccount extends Bank {
+    // void showRules() { }                   // ERROR: cannot override final method
+    void interest() { System.out.println("Savings interest: 4%"); }
+}
+
+final class Utility {                         // final class: can't be inherited
+    static int cube(int x) { return x * x * x; }
+}
+
+// class MyUtility extends Utility { }        // ERROR: cannot inherit from final class
+
+public class Main {
+    public static void main(String[] args) {
+        SavingsAccount s = new SavingsAccount();
+        s.showRules();
+        s.interest();
+        // s.MIN_BALANCE = 500;                // ERROR: cannot assign a value to final variable
+
+        final int x = 10;                      // final local variable
+        // x = 20;                             // ERROR
+        System.out.println("final local x = " + x);
+
+        System.out.println("Cube from final class: " + Utility.cube(3));
+    }
+}
+```
+Uncomment any `// ERROR` line to show the compile error in your output screenshot.
+
+---
+
+### Assignment 10 — Abstract class and abstract methods
+```java
+abstract class Shape {
+    String name;
+
+    Shape(String name) { this.name = name; }   // abstract class can have constructors
+
+    abstract double area();                    // no body
+    abstract double perimeter();
+
+    void display() {                           // concrete method
+        System.out.printf("%s -> Area: %.2f, Perimeter: %.2f%n", name, area(), perimeter());
+    }
+}
+
+class Circle extends Shape {
+    double r;
+    Circle(double r) { super("Circle"); this.r = r; }
+    double area()      { return Math.PI * r * r; }
+    double perimeter() { return 2 * Math.PI * r; }
+}
+
+class Rectangle extends Shape {
+    double l, w;
+    Rectangle(double l, double w) { super("Rectangle"); this.l = l; this.w = w; }
+    double area()      { return l * w; }
+    double perimeter() { return 2 * (l + w); }
+}
+
+class Triangle extends Shape {
+    double a, b, c;
+    Triangle(double a, double b, double c) { super("Triangle"); this.a = a; this.b = b; this.c = c; }
+    double area() {
+        double s = (a + b + c) / 2;            // Heron's formula
+        return Math.sqrt(s * (s - a) * (s - b) * (s - c));
+    }
+    double perimeter() { return a + b + c; }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        // Shape s = new Shape("x");           // ERROR: abstract class can't be instantiated
+        Shape[] shapes = { new Circle(5), new Rectangle(4, 6), new Triangle(3, 4, 5) };
+        for (Shape s : shapes) s.display();
+    }
+}
+```
+
+---
+
+### Assignment 11 — Interfaces
+```java
+interface Payment {
+    double TAX = 0.18;                          // public static final
+    void pay(double amount);                    // public abstract
+
+    default void receipt() {                    // default method (Java 8+)
+        System.out.println("Receipt generated");
+    }
+
+    static void info() {                        // static method in interface
+        System.out.println("All payments include " + (TAX * 100) + "% GST");
+    }
+}
+
+interface Refundable {
+    void refund(double amount);
+}
+
+class CardPayment implements Payment, Refundable {   // implementing multiple interfaces
+    public void pay(double amount) {
+        System.out.println("Paid by card: " + (amount + amount * TAX));
+    }
+    public void refund(double amount) {
+        System.out.println("Refunded to card: " + amount);
+    }
+}
+
+class UpiPayment implements Payment {
+    public void pay(double amount) {
+        System.out.println("Paid by UPI: " + (amount + amount * TAX));
+    }
+    public void receipt() {                       // overriding default method
+        System.out.println("UPI receipt sent by SMS");
+    }
+}
+
+interface Premium extends Payment {               // interface extending interface
+    void cashback();
+}
+
+class WalletPayment implements Premium {
+    public void pay(double amount) { System.out.println("Paid by wallet: " + amount); }
+    public void cashback() { System.out.println("Cashback Rs 50 credited"); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Payment.info();
+
+        Payment p1 = new CardPayment();           // interface reference
+        p1.pay(1000);
+        p1.receipt();
+        ((Refundable) p1).refund(500);
+
+        Payment p2 = new UpiPayment();
+        p2.pay(200);
+        p2.receipt();
+
+        WalletPayment w = new WalletPayment();
+        w.pay(300);
+        w.cashback();
+    }
+}
+```
+
+---
+
+### Assignment 12 — User-defined packages (TWO files)
+Folder structure:
+```
+Assign12/
+├── mathops/
+│   └── Arithmetic.java
+└── Main.java
+```
+**mathops/Arithmetic.java**
+```java
+package mathops;
+
+public class Arithmetic {
+    public int add(int a, int b)      { return a + b; }
+    public int subtract(int a, int b) { return a - b; }
+    public int multiply(int a, int b) { return a * b; }
+    public double divide(int a, int b) { return (double) a / b; }
+
+    int hidden() { return 0; }          // default access: NOT visible outside mathops
+}
+```
+**Main.java**
+```java
+import mathops.Arithmetic;
+
+public class Main {
+    public static void main(String[] args) {
+        Arithmetic ar = new Arithmetic();
+        System.out.println("Add: " + ar.add(20, 10));
+        System.out.println("Subtract: " + ar.subtract(20, 10));
+        System.out.println("Multiply: " + ar.multiply(20, 10));
+        System.out.println("Divide: " + ar.divide(20, 3));
+        // ar.hidden();   // ERROR: hidden() is not public in Arithmetic
+    }
+}
+```
+Compile and run from the `Assign12` folder:
+```
+javac mathops/Arithmetic.java Main.java
+java Main
+```
+Online compilers may not support folders; this one is best run on a real JDK.
+
+---
+
+### Assignment 13 — File handling (write and read)
+```java
+import java.io.*;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        String fileName = "students.txt";
+
+        // 1. Write (overwrites)
+        try (FileWriter fw = new FileWriter(fileName)) {
+            fw.write("519,Aaryan,88\n");
+            fw.write("520,Rohan,76\n");
+            System.out.println("Data written to " + fileName);
+        } catch (IOException e) {
+            System.out.println("Write error: " + e.getMessage());
+        }
+
+        // 2. Append
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName, true))) {
+            bw.write("521,Sneha,92");
+            bw.newLine();
+            System.out.println("Data appended");
+        } catch (IOException e) {
+            System.out.println("Append error: " + e.getMessage());
+        }
+
+        // 3. Read with BufferedReader
+        System.out.println("--- Reading with BufferedReader ---");
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                System.out.println("Roll: " + parts[0] + ", Name: " + parts[1] + ", Marks: " + parts[2]);
+            }
+        } catch (IOException e) {
+            System.out.println("Read error: " + e.getMessage());
+        }
+
+        // 4. Read with Scanner
+        System.out.println("--- Reading with Scanner ---");
+        try (Scanner sc = new Scanner(new File(fileName))) {
+            while (sc.hasNextLine()) System.out.println(sc.nextLine());
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+        }
+
+        // 5. File info
+        File f = new File(fileName);
+        System.out.println("Exists: " + f.exists() + ", Size: " + f.length() + " bytes, Path: " + f.getAbsolutePath());
+    }
+}
+```
+
+---
+
+## UNIT 3
+
+### Assignment 14 — try-catch, multiple and nested try-catch
+```java
+public class Main {
+    public static void main(String[] args) {
+        // 1. Simple try-catch
+        try {
+            int x = 10 / 0;
+            System.out.println(x);
+        } catch (ArithmeticException e) {
+            System.out.println("1. Caught: " + e.getMessage());
+        }
+
+        // 2. Multiple catch blocks
+        int[] arr = {1, 2, 3};
+        String s = null;
+        for (int test = 1; test <= 3; test++) {
+            try {
+                if (test == 1) System.out.println(arr[5]);
+                if (test == 2) System.out.println(s.length());
+                if (test == 3) Integer.parseInt("abc");
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.out.println("2. Array index error: " + e.getMessage());
+            } catch (NullPointerException e) {
+                System.out.println("2. Null pointer error");
+            } catch (Exception e) {                    // general catch must be LAST
+                System.out.println("2. General exception: " + e);
+            }
+        }
+
+        // 3. Multi-catch in one block (Java 7+)
+        try {
+            Object o = "text";
+            Integer i = (Integer) o;
+        } catch (ClassCastException | NumberFormatException e) {
+            System.out.println("3. Multi-catch: " + e.getClass().getSimpleName());
+        }
+
+        // 4. Nested try-catch
+        try {
+            System.out.println("4. Outer try started");
+            try {
+                int[] a = new int[2];
+                a[3] = 5;
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.out.println("4. Inner catch: " + e.getMessage());
+            }
+            int y = 5 / 0;                             // not handled inside -> goes to outer
+        } catch (ArithmeticException e) {
+            System.out.println("4. Outer catch: " + e.getMessage());
+        }
+
+        System.out.println("Program continues normally");
+    }
+}
+```
+
+---
+
+### Assignment 15 — finally, throw, throws
+```java
+import java.io.*;
+
+public class Main {
+
+    // throws: declares that this method may throw a checked exception
+    static void readFile(String name) throws FileNotFoundException {
+        FileReader fr = new FileReader(name);
+        System.out.println("File opened");
+    }
+
+    // throw: explicitly throws an exception
+    static void withdraw(double balance, double amount) {
+        if (amount > balance) {
+            throw new ArithmeticException("Insufficient balance");
+        }
+        System.out.println("Withdrawn: " + amount);
+    }
+
+    static int testFinally() {
+        try {
+            return 1;
+        } finally {
+            System.out.println("finally runs even after return");
+        }
+    }
+
+    public static void main(String[] args) {
+        // finally with exception
+        try {
+            int r = 10 / 0;
+        } catch (ArithmeticException e) {
+            System.out.println("Caught: " + e.getMessage());
+        } finally {
+            System.out.println("finally block executed (exception case)");
+        }
+
+        // finally without exception
+        try {
+            System.out.println("No exception here");
+        } finally {
+            System.out.println("finally block executed (normal case)");
+        }
+
+        // throw
+        try {
+            withdraw(5000, 2000);
+            withdraw(5000, 8000);
+        } catch (ArithmeticException e) {
+            System.out.println("throw demo: " + e.getMessage());
+        }
+
+        // throws
+        try {
+            readFile("missing.txt");
+        } catch (FileNotFoundException e) {
+            System.out.println("throws demo: " + e.getMessage());
+        }
+
+        System.out.println("Returned: " + testFinally());
+    }
+}
+```
+
+---
+
+### Assignment 16 — User-defined exception
+```java
+import java.util.Scanner;
+
+class InsufficientBalanceException extends Exception {     // checked custom exception
+    InsufficientBalanceException(String msg) { super(msg); }
+}
+
+class InvalidAgeException extends RuntimeException {        // unchecked custom exception
+    InvalidAgeException(String msg) { super(msg); }
+}
+
+class Account {
+    double balance;
+
+    Account(double balance) { this.balance = balance; }
+
+    void withdraw(double amt) throws InsufficientBalanceException {
+        if (amt > balance) {
+            throw new InsufficientBalanceException("Cannot withdraw " + amt + ", balance is only " + balance);
+        }
+        balance -= amt;
+        System.out.println("Withdrawn " + amt + ", remaining " + balance);
+    }
+}
+
+public class Main {
+    static void checkAge(int age) {
+        if (age < 18) throw new InvalidAgeException("Age " + age + " is below 18");
+        System.out.println("Age " + age + " is valid for account opening");
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        try {
+            System.out.print("Enter age: ");
+            checkAge(sc.nextInt());
+
+            Account acc = new Account(5000);
+            System.out.print("Enter amount to withdraw: ");
+            acc.withdraw(sc.nextDouble());
+        } catch (InsufficientBalanceException e) {
+            System.out.println("Custom checked exception: " + e.getMessage());
+        } catch (InvalidAgeException e) {
+            System.out.println("Custom unchecked exception: " + e.getMessage());
+        } finally {
+            System.out.println("Transaction ended");
+            sc.close();
+        }
+    }
+}
+```
+Run twice: once with `20 3000` (success), once with `20 9000` (balance error), once with `15` (age error).
+
+---
+
+### Assignment 17 — Swing and Applets
+**Swing** (works on JDK; online compilers have no screen — run locally):
+```java
+import javax.swing.*;
+import java.awt.*;
+
+public class Main {
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Student Registration");
+        frame.setSize(350, 300);
+        frame.setLayout(new GridLayout(6, 2, 5, 5));
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        frame.add(new JLabel("Name:"));
+        frame.add(new JTextField());
+
+        frame.add(new JLabel("Gender:"));
+        JPanel gp = new JPanel();
+        JRadioButton male = new JRadioButton("Male");
+        JRadioButton female = new JRadioButton("Female");
+        ButtonGroup bg = new ButtonGroup();
+        bg.add(male); bg.add(female);
+        gp.add(male); gp.add(female);
+        frame.add(gp);
+
+        frame.add(new JLabel("Course:"));
+        frame.add(new JComboBox<>(new String[]{"CSE", "IT", "ENTC"}));
+
+        frame.add(new JLabel("Hobbies:"));
+        frame.add(new JCheckBox("Coding"));
+
+        frame.add(new JLabel("Address:"));
+        frame.add(new JTextArea());
+
+        frame.add(new JButton("Submit"));
+        frame.add(new JButton("Reset"));
+
+        frame.setVisible(true);
+    }
+}
+```
+**Applet** (removed from JDK 11+; needs JDK 8 + `appletviewer`):
+```java
+import java.applet.Applet;
+import java.awt.*;
+
+/* <applet code="MyApplet.class" width="400" height="300"></applet> */
+public class MyApplet extends Applet {
+    public void init()    { setBackground(Color.yellow); System.out.println("init"); }
+    public void start()   { System.out.println("start"); }
+    public void paint(Graphics g) {
+        g.setColor(Color.blue);
+        g.drawString("Hello from Applet", 120, 50);
+        g.drawRect(50, 80, 100, 60);
+        g.fillOval(200, 80, 80, 80);
+    }
+    public void stop()    { System.out.println("stop"); }
+    public void destroy() { System.out.println("destroy"); }
+}
+```
+Run (JDK 8): `javac MyApplet.java` then `appletviewer MyApplet.java`.
+
+---
+
+### Assignment 18 — Button click event handling
+```java
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class Main extends JFrame implements ActionListener {
+    JTextField num1 = new JTextField(10);
+    JTextField num2 = new JTextField(10);
+    JLabel result = new JLabel("Result: ");
+    JButton addBtn = new JButton("Add");
+    JButton subBtn = new JButton("Subtract");
+    JButton clearBtn = new JButton("Clear");
+
+    Main() {
+        setTitle("Button Click Demo");
+        setLayout(new FlowLayout());
+        add(new JLabel("Number 1:")); add(num1);
+        add(new JLabel("Number 2:")); add(num2);
+        add(addBtn); add(subBtn); add(clearBtn);
+        add(result);
+
+        // Way 1: this class implements ActionListener
+        addBtn.addActionListener(this);
+        subBtn.addActionListener(this);
+
+        // Way 2: anonymous class
+        clearBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                num1.setText("");
+                num2.setText("");
+                result.setText("Result: ");
+            }
+        });
+
+        setSize(260, 220);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        try {
+            int a = Integer.parseInt(num1.getText());
+            int b = Integer.parseInt(num2.getText());
+            if (e.getSource() == addBtn) result.setText("Result: " + (a + b));
+            else if (e.getSource() == subBtn) result.setText("Result: " + (a - b));
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Please enter valid integers");
+        }
+    }
+
+    public static void main(String[] args) {
+        new Main();
+    }
+}
+```
+"With IDE" version = same logic, but you drag buttons in NetBeans GUI Builder and double-click a button to get an auto-generated `jButton1ActionPerformed(...)` method where you put the same code.
